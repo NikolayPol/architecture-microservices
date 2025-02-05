@@ -1,0 +1,21 @@
+@startuml
+
+entity HeatingSystem {
+    * id : bigserial <<generated>>
+    --
+    * isOn : boolean
+    * targetTemperature : double
+    * currentTemperature : double
+}
+
+entity TemperatureSensor {
+    * id : bigserial <<generated>>
+    --
+    * currentTemperature : double
+    * lastUpdated : timestamp
+    * heatingSystem: bigserial <<FK>>
+}
+
+HeatingSystem ||--|{ TemperatureSensor
+
+@enduml

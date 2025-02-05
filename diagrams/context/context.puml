@@ -1,0 +1,16 @@
+@startuml
+!include ../templates/C4_Context.puml
+
+SHOW_PERSON_OUTLINE()
+
+Person(user, "UI(Пользователь)")
+
+System(monolith, "smart-home-monolith")
+
+Rel(user, monolith, "Включить/выключить подсистему отопления")
+Rel(user, monolith, "Установить желаемую температуру в подсистеме отопления")
+Rel(user, monolith, "Посмотреть текущую температуру в подсистеме отопления")
+
+SHOW_LEGEND()
+
+@enduml
