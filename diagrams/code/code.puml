@@ -1,0 +1,27 @@
+@startuml
+class TelemetryController {
+    - telemetryService : TelemetryService
+    + getHeatingSystemTemperature(long systemId) : double
+}
+
+class TelemetryService {
+    - telemetryRepository : TelemetryRepository
+    + getTemperature(long systemId) : double
+}
+
+class KafkaConsumerService {
+    - devicesRepository : DevicesRepository
+    + listenTemperatureEvent() : void
+    + saveTensorTemperature(long tensorId, double temperature) : void
+}
+
+class TelemetryRepository {
+    + saveTensorTemperature(long tensorId, double temperature) : void
+    + getTensorTemperature(long tensorId, double temperature) : double
+}
+
+TelemetryController --> TelemetryService
+TelemetryService --> TelemetryRepository
+KafkaConsumerService --> TelemetryRepository
+
+@enduml

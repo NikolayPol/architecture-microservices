@@ -1,0 +1,38 @@
+@startuml
+
+entity User {
+    * id : bigserial <<generated>>
+    --
+    * name : string
+}
+
+entity HeatingSystem {
+    * id : bigserial <<generated>>
+    --
+    * isOn : boolean
+    * targetTemperature : double
+    * currentTemperature : double
+    * telemetry : Telemetry
+}
+
+entity Telemetry {
+    * id : bigserial <<generated>>
+    --
+    * averageTemperature : double
+    * updatedAt : timestamp
+    * heatingSystem : HeatingSystem
+    * sensors : Collection<TemperatureSensor>
+}
+
+entity TemperatureSensor {
+    * id : bigserial <<generated>>
+    --
+    * currentTemperature : double
+    * lastUpdated : timestamp
+}
+
+Telemetry ||--|{ TemperatureSensor
+HeatingSystem ||--|| Telemetry
+HeatingSystem }|--|{ User
+
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+!include ../templates/C4_Component.puml
+
+SHOW_PERSON_OUTLINE()
+
+Person(user, "UI(Пользователь)")
+
+System_Ext(gateway, "API Gateway")
+System_Ext(tensor, "Temperature tensor")
+
+Container_Boundary(devicesMicroservice, "Микросервис управления устройствами") {
+    Component(devicesController, "smart-home-devices-controller")
+    Component(devicesService, "smart-home-devices-service")
+    Component(devicesRepository, "smart-home-devices-repository")
+    ContainerDb(devicesDb, $techn="Postgres", "База данных")
+}
+
+Container_Boundary(telemetryMicroservice, "Микросервис мониторинга устройств") {
+    Component(telemetryController, "smart-home-telemetry-controller")
+    Component(telemetryService, "smart-home-telemetry-service")
+    Component(telemetryKafkaConsumerService, "kafka-consumer-service")
+    Component(telemetryRepository, "smart-home-telemetry-repository")
+    ContainerDb(telemetryDb, $techn="Postgres", "База данных")
+}
+
+ContainerQueue(kafka, "Kafka", $techn="температуры с датчиков")
+
+Rel(user, gateway, "Взаимодействие с API приложения")
+Rel(gateway, devicesController, "Включить/выключить подсистему отопления")
+Rel(gateway, devicesController, "Установить желаемую температуру в подсистеме отопления")
+Rel(gateway, telemetryController, "Посмотреть текущую температуру в подсистеме отопления")
+
+Rel(devicesController, devicesService, "")
+Rel(devicesService, devicesRepository, "")
+Rel(devicesRepository, devicesDb, "Сохранить/Прочитать настройки устройств")
+
+Rel(telemetryController, telemetryService, "")
+Rel(telemetryService, telemetryRepository, "Чтение температур датчиков")
+Rel(telemetryKafkaConsumerService, telemetryRepository, "Сохранить температуру датчиков")
+Rel(telemetryRepository, telemetryDb, "Сохранить/Прочитать температуру с датчиков")
+
+Rel(devicesService, telemetryController, "Запрос средней температуры по подсистеме отопления")
+Rel(telemetryService, devicesController, "Запрос настроек по подсистеме отопления")
+
+Rel(kafka, telemetryKafkaConsumerService, "Чтение температур с датчиков")
+Rel(tensor, kafka, "Публикация температуры")
+
+SHOW_LEGEND()
+
+@enduml
