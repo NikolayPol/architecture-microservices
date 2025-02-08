@@ -6,10 +6,13 @@ SHOW_PERSON_OUTLINE()
 Person(user, "UI(Пользователь)")
 
 System(monolith, "smart-home-monolith")
+System_Ext(tensor, "Temperature tensor")
 
 Rel(user, monolith, "Включить/выключить подсистему отопления")
 Rel(user, monolith, "Установить желаемую температуру в подсистеме отопления")
 Rel(user, monolith, "Посмотреть текущую температуру в подсистеме отопления")
+
+Rel(tensor, monolith, "Отправка данных температуры")
 
 SHOW_LEGEND()
 

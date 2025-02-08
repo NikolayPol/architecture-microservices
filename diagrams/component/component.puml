@@ -12,15 +12,16 @@ Container_Boundary(devicesMicroservice, "Микросервис управлен
     Component(devicesController, "smart-home-devices-controller")
     Component(devicesService, "smart-home-devices-service")
     Component(devicesRepository, "smart-home-devices-repository")
+    ContainerDb(devicesDb, $techn="Postgres", "База данных")
 }
-ContainerDb(devicesDb, $techn="Postgres", "База данных")
 
 Container_Boundary(telemetryMicroservice, "Микросервис мониторинга устройств") {
     Component(telemetryController, "smart-home-telemetry-controller")
     Component(telemetryService, "smart-home-telemetry-service")
-    Component(telemetryRepository, "smart-home-telemetry-telemetry")
+    Component(telemetryKafkaConsumerService, "kafka-consumer-service")
+    Component(telemetryRepository, "smart-home-telemetry-repository")
+    ContainerDb(telemetryDb, $techn="Postgres", "База данных")
 }
-ContainerDb(telemetryDb, $techn="Postgres", "База данных")
 
 ContainerQueue(kafka, "Kafka", $techn="температуры с датчиков")
 
@@ -31,16 +32,17 @@ Rel(gateway, telemetryController, "Посмотреть текущую темп�
 
 Rel(devicesController, devicesService, "")
 Rel(devicesService, devicesRepository, "")
-Rel(devicesRepository, devicesDb, "Сохранить настройки устройств")
+Rel(devicesRepository, devicesDb, "Сохранить/Прочитать настройки устройств")
 
 Rel(telemetryController, telemetryService, "")
-Rel(telemetryService, telemetryRepository, "")
-Rel(telemetryRepository, telemetryDb, "Сохранить температуру с датчиков")
+Rel(telemetryService, telemetryRepository, "Чтение температур датчиков")
+Rel(telemetryKafkaConsumerService, telemetryRepository, "Сохранить температуру датчиков")
+Rel(telemetryRepository, telemetryDb, "Сохранить/Прочитать температуру с датчиков")
 
 Rel(devicesService, telemetryController, "Запрос средней температуры по подсистеме отопления")
 Rel(telemetryService, devicesController, "Запрос настроек по подсистеме отопления")
 
-Rel(kafka, telemetryService, "Чтение температур с датчиков")
+Rel(kafka, telemetryKafkaConsumerService, "Чтение температур с датчиков")
 Rel(tensor, kafka, "Публикация температуры")
 
 SHOW_LEGEND()
